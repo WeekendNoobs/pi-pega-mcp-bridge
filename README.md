@@ -18,6 +18,10 @@ pi session
               └── talks to your Pega Infinity environment REST APIs
 ```
 
+## Why not pi-mcp-adapter?
+
+[pi-mcp-adapter](https://www.npmjs.com/package/pi-mcp-adapter) is a fine generic MCP client for pi, and pointing it at Pega's jar works. This package exists because generic gets you none of the Pega-specific decisions: all 29 tools registered with write access on day one, no integrity check on the jar, no setup flow for the OAuth client and redirect URI, and no help with the config mistakes Pega's docs invite (a `/prweb` suffix in the URL, a missing `PEGA_SKILLS_PATH`). If you want those safety defaults handled for you, use this bridge. If you want full control, the adapter is a reasonable path.
+
 ## Prerequisites
 
 | Requirement | Notes |
@@ -75,13 +79,13 @@ You do **not** need to install the Pega plugin into Claude Code, Codex, or Copil
 ## Install
 
 ```bash
-pi install git:github.com/YOUR_GITHUB_USERNAME/pi-pega-mcp-bridge
+pi install git:github.com/WeekendNoobs/pi-pega-mcp-bridge
 ```
 
 Or, to try it without installing:
 
 ```bash
-pi -e git:github.com/YOUR_GITHUB_USERNAME/pi-pega-mcp-bridge
+pi -e git:github.com/WeekendNoobs/pi-pega-mcp-bridge
 ```
 
 ## Configure the connection

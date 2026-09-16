@@ -7,10 +7,10 @@
 	"type": "module",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/YOUR_GITHUB_USERNAME/pi-pega-mcp-bridge.git"
+		"url": "git+https://github.com/WeekendNoobs/pi-pega-mcp-bridge.git"
 	},
 	"bugs": {
-		"url": "https://github.com/YOUR_GITHUB_USERNAME/pi-pega-mcp-bridge/issues"
+		"url": "https://github.com/WeekendNoobs/pi-pega-mcp-bridge/issues"
 	},
 	"engines": {
 		"node": ">=20"
