@@ -1,6 +1,6 @@
 # pi-pega-mcp-bridge
 
-Run Pega Infinity authoring directly inside the [pi coding agent](https://github.com/badlogic/pi-mono). This extension bridges Pega's bundled MCP server (`infinity-rules-mcp.jar` from [pegasystems/infinity-ai-plugins](https://github.com/pegasystems/infinity-ai-plugins)) into pi's native tool system, exposing 22 Pega authoring tools per session: search and read rules, list case types, browse Pega's authoring skills, run data pages and PegaUnit tests, and optionally author changes through Pega's ChangeRequest workflow.
+Run Pega Infinity authoring inside the [pi coding agent](https://github.com/badlogic/pi-mono). This extension spawns Pega's own MCP server (`infinity-rules-mcp.jar` from [pegasystems/infinity-ai-plugins](https://github.com/pegasystems/infinity-ai-plugins)) and registers its tools in pi as native tools. In a read-only session you get 22 tools: search and read rules, list case types, browse Pega's authoring skills, run data pages and PegaUnit tests. Enable write mode and you also get rule and case authoring through Pega's ChangeRequest workflow.
 
 No MCP client plugin is installed into pi. The bridge spawns Pega's own server as a subprocess and speaks JSON-RPC over stdio, so the tools appear to the model exactly like built-in pi tools.
 
@@ -23,7 +23,7 @@ pi session
 | Requirement | Notes |
 |---|---|
 | pi coding agent | https://github.com/badlogic/pi-mono |
-| Java 17 or later | The Pega server is a Spring Boot jar. 17+ also works. |
+| Java 17 or later | The Pega server is a Spring Boot jar and will not run on Java 11. |
 | Pega Infinity 26.1+ | 25.1.3+ and 24.2.5+ require engagement with Pega Support |
 | Pega environment access | You need an account that can author in the target application |
 | Pega repo clone | `git clone https://github.com/pegasystems/infinity-ai-plugins.git` |
@@ -119,8 +119,8 @@ Writes go through Pega's ChangeRequest workflow (branch rulesets), which is Pega
 
 ## Commands
 
-- `/pega-status` — server state, mode, registered tool count, config summary, last error
-- `/pega-restart` — restart the jar; picks up `config.json` changes and Pega repo updates
+- `/pega-status`: server state, mode, registered tool count, config summary, last error
+- `/pega-restart`: restart the jar, picks up `config.json` changes and Pega repo updates
 
 ## Configuration reference
 
