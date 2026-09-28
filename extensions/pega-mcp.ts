@@ -10,13 +10,14 @@
  * Security model:
  * - READ-ONLY by default. Tools that modify Pega data (rules, cases,
  *   ChangeRequests) are not registered unless write access is explicitly
- *   enabled with PEGA_MCP_WRITE_TOOLS=1.
+ *   enabled with PEGA_MCP_WRITE_TOOLS=1 or {"write_tools": true} in
+ *   ~/.pi/agent/pega/bridge.json.
  * - The jar's SHA-256 is pinned. A mismatch refuses to start so a `git pull`
  *   of the Pega repo cannot silently swap the executable. Override with
  *   PEGA_MCP_EXPECTED_JAR_SHA256 or update the PINNED_JAR_SHA256 constant.
  *
  * Environment variables:
- * - PEGA_MCP_WRITE_TOOLS=1          register write tools (default: off)
+ * - PEGA_MCP_WRITE_TOOLS=1          register write tools (overrides bridge.json)
  * - PEGA_MCP_EXPECTED_JAR_SHA256    override the pinned jar hash
  * - PEGA_MCP_TIMEOUT_MS             per-request timeout (default: 120000)
  * - PEGA_PLUGIN_DIR                 path to .../plugins/pega/infinity-ai-plugins/claude
@@ -35,6 +36,24 @@ import { join } from "node:path";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
 const CONFIG_FILE = join(homedir(), ".infinity-rules-mcp", "config.json");
+
+/** Optional bridge-owned settings file, read at tool-registration time. */
+const BRIDGE_CONFIG_FILE = join(homedir(), ".pi", "agent", "pega", "bridge.json");
+
+interface BridgeConfig {
+	write_tools?: boolean | string;
+}
+
+function loadBridgeConfig(): BridgeConfig {
+	try {
+		if (existsSync(BRIDGE_CONFIG_FILE)) {
+			return JSON.parse(readFileSync(BRIDGE_CONFIG_FILE, "utf8")) as BridgeConfig;
+		}
+	} catch {
+		// Unreadable or invalid bridge.json is treated as absent; the env var still applies.
+	}
+	return {};
+}
 
 /** SHA-256 of the tested infinity-rules-mcp.jar at Pega repo commit 5b53502d. */
 const PINNED_JAR_SHA256 = "1ff3c89608481d102304b2cec72757847fb5d906aa3df2c33bc18f33dc3dd4d2";
@@ -74,7 +93,10 @@ function requestTimeoutMs(): number {
 }
 
 function writeToolsEnabled(): boolean {
-	return ["1", "true", "yes", "on"].includes((process.env.PEGA_MCP_WRITE_TOOLS ?? "").toLowerCase());
+	const truthy = (value: unknown) => ["1", "true", "yes", "on"].includes(String(value ?? "").toLowerCase());
+	const env = process.env.PEGA_MCP_WRITE_TOOLS;
+	if (env !== undefined && env !== "") return truthy(env);
+	return truthy(loadBridgeConfig().write_tools);
 }
 
 // ---------------------------------------------------------------------------

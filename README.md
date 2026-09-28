@@ -119,6 +119,14 @@ To enable write access for a session:
 PEGA_MCP_WRITE_TOOLS=1 pi
 ```
 
+For a persistent toggle, create `~/.pi/agent/pega/bridge.json`:
+
+```json
+{ "write_tools": true }
+```
+
+When the environment variable is set it takes precedence, so `PEGA_MCP_WRITE_TOOLS=0 pi` still forces a read-only session.
+
 Writes go through Pega's ChangeRequest workflow (branch rulesets), which is Pega's own recommended authoring pattern. Ask the agent for `get-skill("recipes/change-request-workflow")` before your first write session.
 
 ## Commands
@@ -140,14 +148,14 @@ Writes go through Pega's ChangeRequest workflow (branch rulesets), which is Pega
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `PEGA_MCP_WRITE_TOOLS` | unset (read-only) | `1` enables the seven write tools |
+| `PEGA_MCP_WRITE_TOOLS` | unset | `1` enables, `0` disables. When set, overrides `bridge.json` |
 | `PEGA_MCP_TIMEOUT_MS` | `120000` | Per-request timeout. Raise it for long PegaUnit runs. |
 | `PEGA_MCP_EXPECTED_JAR_SHA256` | pinned hash | Override the jar integrity pin |
 | `PEGA_PLUGIN_DIR` | `~/.pi/agent/pega/...` | Alternate location of the cloned repo's `claude` directory |
 
 ## Security model
 
-- **Read-only default.** Write tools are opt-in per session (see above).
+- **Read-only default.** Write tools are opt-in via `PEGA_MCP_WRITE_TOOLS=1` or `~/.pi/agent/pega/bridge.json` (see above).
 - **Jar integrity pin.** The bridge embeds the SHA-256 of the tested `infinity-rules-mcp.jar`. A mismatch (for example after `git pull` in the Pega repo) refuses to start and prints the actual hash. Update the pin deliberately via `PEGA_MCP_EXPECTED_JAR_SHA256` or by updating this package; never let a repo pull silently swap the executable.
 - **Loopback OAuth.** Pega's server implements the authorization code flow over `http://localhost:8888/callback` with no PKCE. On a single-user machine this is standard practice; on shared hosts any local process could race the callback port. If port 8888 is occupied, set `PEGA_OAUTH_REDIRECT_PORT` in the environment and register the matching redirect URI in Pega. Both sides must change together.
 - **Operator scope.** Tool calls execute as your Pega user through the client registration you created. Treat agent-initiated writes like any other change made by your account.
