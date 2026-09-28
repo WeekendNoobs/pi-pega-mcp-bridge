@@ -349,7 +349,7 @@ async function startServer(bridge: Bridge): Promise<boolean> {
 		const init = (await send(bridge, "initialize", {
 			protocolVersion: "2024-11-05",
 			capabilities: {},
-			clientInfo: { name: "pi-pega-bridge", version: "0.2.0" },
+			clientInfo: { name: "pi-pega-bridge", version: "0.3.0" },
 		}, 30_000)) as { serverInfo?: { name?: string; version?: string } } | undefined;
 		bridge.serverInfo = init?.serverInfo ? `${init.serverInfo.name} ${init.serverInfo.version}` : "unknown";
 		child.stdin.write(JSON.stringify({ jsonrpc: "2.0", method: "notifications/initialized" }) + "\n");

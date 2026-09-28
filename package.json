@@ -1,6 +1,6 @@
 {
 	"name": "pi-pega-mcp-bridge",
-	"version": "0.1.0",
+	"version": "0.3.0",
 	"description": "Pega Infinity Authoring MCP bridge for the pi coding agent. Runs Pega's bundled infinity-rules-mcp server and exposes its authoring tools as native pi tools.",
 	"keywords": ["pi-package", "pega", "mcp", "pi-coding-agent"],
 	"license": "MIT",
